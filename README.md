@@ -92,13 +92,3 @@ npm start
 ## 🤝 Contributing
 
 Contributions are welcome! Feel free to open issues or submit pull requests.
-
-## 📄 License
-
-MIT License
-
----
-
-## Short GitHub Description
-
-A minimalist calculator-style app that computes Chinese kinship terms for complex family relationships.
