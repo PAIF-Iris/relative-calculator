@@ -1,92 +1,5 @@
-// import React from "react"
-// import { View, Text, TouchableOpacity, StyleSheet } from "react-native"
-// import {
-//   widthPercentageToDP as wp,
-//   heightPercentageToDP as hp
-// } from "react-native-responsive-screen"
-
-// const BUTTONS = [
-
-// ['爸爸','妈妈','爷爷','奶奶'],
-// ['姥爷','姥姥','哥哥','姐姐'],
-// ['弟弟','妹妹','儿子','女儿'],
-// ['舅舅','姨','叔叔','的'],
-
-// ['1','2','3','4'],
-// ['5','6','7','8'],
-// ['9','C','=']
-
-// ]
-
-// export default function ButtonGrid({ onPress }:{ onPress:(v:string)=>void }){
-
-//   return(
-
-//     <View style={styles.container}>
-
-//       {BUTTONS.map((row,i)=>(
-//         <View key={i} style={styles.row}>
-
-//           {row.map(btn=>(
-
-//             <TouchableOpacity
-//               key={btn}
-//               style={styles.button}
-//               onPress={()=>onPress(btn)}
-//               activeOpacity={0.7}
-//             >
-
-//               <Text style={styles.text}>
-//                 {btn}
-//               </Text>
-
-//             </TouchableOpacity>
-
-//           ))}
-
-//         </View>
-//       ))}
-
-//     </View>
-
-//   )
-// }
-
-// const styles = StyleSheet.create({
-
-//   container:{
-//     flex:1,
-//     paddingBottom: hp("2%"),
-//     backgroundColor:"#000"
-//   },
-
-//   row:{
-//     flexDirection:"row",
-//     flex:1
-//   },
-
-//   button:{
-//     flex:1,
-//     justifyContent:"center",
-//     alignItems:"center",
-//     borderWidth:0.5,
-//     borderColor:"#111",
-//     backgroundColor:"#333"
-//   },
-
-//   text:{
-//     fontSize: wp("5.5%"),
-//     color:"#fff",
-//     fontWeight:"600"
-//   }
-
-// })
-
-
-// components/ButtonGrid.tsx
-
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useMemo } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from "react-native";
 import {
   widthPercentageToDP  as wp,
   heightPercentageToDP as hp,
@@ -131,10 +44,37 @@ export default function ButtonGrid({
 }: {
   onPress: (v: string) => void;
 }) {
+  const { width, height } = useWindowDimensions();
+  
+  const dynamicStyles = useMemo(() => ({
+    container: {
+      flex: 1,
+      paddingBottom: hp("1.5%"),
+      backgroundColor: "#000",
+    },
+    row: {
+      flexDirection: "row" as const,
+      flex: 1,
+    },
+    button: {
+      flex: 1,
+      justifyContent: "center" as const,
+      alignItems: "center" as const,
+      borderWidth: wp("0.15%"),
+      borderColor: "#222",
+      backgroundColor: "#1e1e1e",
+    },
+    text: {
+      fontSize: wp("3.5%"),
+      color: "#fff",
+      fontWeight: "600" as const,
+    },
+  }), [width, height]);
+  
   return (
-    <View style={styles.container}>
+    <View style={dynamicStyles.container}>
       {BUTTONS.map((row, i) => (
-        <View key={i} style={styles.row}>
+        <View key={i} style={dynamicStyles.row}>
           {row.map((btn) => {
             const label = typeof btn === "string" ? btn : btn.label;
             const flex  = typeof btn === "object"  ? btn.flex : 1;
@@ -144,7 +84,7 @@ export default function ButtonGrid({
               <TouchableOpacity
                 key={label}
                 style={[
-                  styles.button,
+                  dynamicStyles.button,
                   { flex },
                   color ? { backgroundColor: color.bg } : null,
                 ]}
@@ -153,11 +93,12 @@ export default function ButtonGrid({
               >
                 <Text
                   style={[
-                    styles.text,
+                    dynamicStyles.text,
                     color ? { color: color.fg } : null,
                   ]}
                   adjustsFontSizeToFit
                   numberOfLines={1}
+                  minimumFontScale={0.7}
                 >
                   {label}
                 </Text>
@@ -169,31 +110,3 @@ export default function ButtonGrid({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex:            1,
-    paddingBottom:   hp("1%"),
-    backgroundColor: "#000",
-  },
-
-  row: {
-    flexDirection: "row",
-    flex:          1,
-  },
-
-  button: {
-    flex:            1,
-    justifyContent:  "center",
-    alignItems:      "center",
-    borderWidth:     0.5,
-    borderColor:     "#222",
-    backgroundColor: "#1e1e1e",
-  },
-
-  text: {
-    fontSize:   wp("5%"),
-    color:      "#fff",
-    fontWeight: "600",
-  },
-});

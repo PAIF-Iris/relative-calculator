@@ -1,62 +1,5 @@
-// import React from "react"
-// import { View, Text, StyleSheet } from "react-native"
-// import {
-//   widthPercentageToDP as wp,
-//   heightPercentageToDP as hp
-// } from "react-native-responsive-screen"
-
-// type Props = {
-//   expression: string
-//   result: string
-// }
-
-// export default function Display({ expression, result }: Props) {
-
-//   return (
-
-//     <View style={styles.container}>
-
-//       <Text style={styles.expression}>
-//         {expression || " "}
-//       </Text>
-
-//       <Text style={styles.result}>
-//         {result || " "}
-//       </Text>
-
-//     </View>
-
-//   )
-// }
-
-// const styles = StyleSheet.create({
-
-//   container: {
-//     height: hp("25%"),
-//     backgroundColor: "#111",
-//     justifyContent: "center",
-//     alignItems: "flex-end",
-//     paddingHorizontal: wp("5%")
-//   },
-
-//   expression: {
-//     color: "#aaa",
-//     fontSize: wp("6%"),
-//     marginBottom: hp("1%")
-//   },
-
-//   result: {
-//     color: "#00ff88",
-//     fontSize: wp("9%"),
-//     fontWeight: "bold"
-//   }
-
-// })
-
-// components/Display.tsx
-
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useMemo } from "react";
+import { View, Text, StyleSheet, useWindowDimensions } from "react-native";
 import {
   widthPercentageToDP  as wp,
   heightPercentageToDP as hp,
@@ -83,15 +26,65 @@ type Props = {
 };
 
 export default function Display({ expression, result, calculated }: Props) {
-
+  const { width, height } = useWindowDimensions();
   const sideColor = result?.side ? SIDE_COLOR[result.side] : "#00ff88";
+  
+  const dynamicStyles = useMemo(() => ({
+    container: {
+      height: hp("28%"),
+      backgroundColor: "#111",
+      justifyContent: "flex-end" as const,
+      alignItems: "flex-end" as const,
+      paddingHorizontal: wp("5%"),
+      paddingBottom: hp("1.5%"),
+      gap: hp("0.5%"),
+    },
+    expression: {
+      color: "#888",
+      fontSize: wp("4.5%"),
+      textAlign: "right" as const,
+    },
+    result: {
+      fontSize: wp("5.5%"),
+      fontWeight: "bold" as const,
+      textAlign: "right" as const,
+    },
+    tagRow: {
+      flexDirection: "row" as const,
+      gap: wp("2%"),
+      justifyContent: "flex-end" as const,
+      flexWrap: "wrap" as const,
+    },
+    tag: {
+      borderWidth: 1,
+      borderColor: "#444",
+      borderRadius: hp("1%"),
+      paddingHorizontal: wp("2.5%"),
+      paddingVertical: hp("0.3%"),
+    },
+    tagText: {
+      color: "#aaa",
+      fontSize: wp("3.2%"),
+    },
+    note: {
+      color: "#E6A817",
+      fontSize: wp("3.5%"),
+      textAlign: "right" as const,
+    },
+    error: {
+      color: "#ff5555",
+      fontSize: wp("5.5%"),
+      fontWeight: "600" as const,
+      textAlign: "right" as const,
+    },
+  }), [width, height]);
 
   return (
-    <View style={styles.container}>
+    <View style={dynamicStyles.container}>
 
       {/* ── expression row ── */}
       <Text
-        style={styles.expression}
+        style={dynamicStyles.expression}
         numberOfLines={1}
         adjustsFontSizeToFit
         minimumFontScale={0.6}
@@ -105,7 +98,7 @@ export default function Display({ expression, result, calculated }: Props) {
           <>
             {/* Main term */}
             <Text
-              style={[styles.result, { color: sideColor }]}
+              style={[dynamicStyles.result, { color: sideColor }]}
               adjustsFontSizeToFit
               numberOfLines={1}
               minimumFontScale={0.4}
@@ -114,17 +107,17 @@ export default function Display({ expression, result, calculated }: Props) {
             </Text>
 
             {/* Formal name + side tag on one row */}
-            <View style={styles.tagRow}>
+            <View style={dynamicStyles.tagRow}>
               {result.formal && result.formal !== result.term && (
-                <View style={styles.tag}>
-                  <Text style={styles.tagText}>
+                <View style={dynamicStyles.tag}>
+                  <Text style={dynamicStyles.tagText}>
                     正式：{result.formal}
                   </Text>
                 </View>
               )}
               {result.side && (
-                <View style={[styles.tag, { borderColor: sideColor }]}>
-                  <Text style={[styles.tagText, { color: sideColor }]}>
+                <View style={[dynamicStyles.tag, { borderColor: sideColor }]}>
+                  <Text style={[dynamicStyles.tagText, { color: sideColor }]}>
                     {SIDE_LABEL[result.side]}
                   </Text>
                 </View>
@@ -133,14 +126,14 @@ export default function Display({ expression, result, calculated }: Props) {
 
             {/* Note (disambiguation hint) */}
             {result.note ? (
-              <Text style={styles.note} numberOfLines={2}>
+              <Text style={dynamicStyles.note} numberOfLines={2}>
                 💡 {result.note}
               </Text>
             ) : null}
           </>
         ) : (
           /* Error state */
-          <Text style={styles.error} numberOfLines={2}>
+          <Text style={dynamicStyles.error} numberOfLines={2}>
             {result.error}
           </Text>
         )
@@ -149,60 +142,3 @@ export default function Display({ expression, result, calculated }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    height:              hp("28%"),
-    backgroundColor:     "#111",
-    justifyContent:      "flex-end",
-    alignItems:          "flex-end",
-    paddingHorizontal:   wp("5%"),
-    paddingBottom:       hp("1.5%"),
-    gap:                 hp("0.5%"),
-  },
-
-  expression: {
-    color:     "#888",
-    fontSize:  wp("5.5%"),
-    textAlign: "right",
-  },
-
-  result: {
-    fontSize:   wp("11%"),
-    fontWeight: "bold",
-    textAlign:  "right",
-  },
-
-  tagRow: {
-    flexDirection: "row",
-    gap:           wp("2%"),
-    justifyContent:"flex-end",
-    flexWrap:      "wrap",
-  },
-
-  tag: {
-    borderWidth:       1,
-    borderColor:       "#444",
-    borderRadius:      hp("1%"),
-    paddingHorizontal: wp("2%"),
-    paddingVertical:   hp("0.2%"),
-  },
-
-  tagText: {
-    color:    "#aaa",
-    fontSize: wp("3%"),
-  },
-
-  note: {
-    color:     "#E6A817",
-    fontSize:  wp("3.2%"),
-    textAlign: "right",
-  },
-
-  error: {
-    color:      "#ff5555",
-    fontSize:   wp("5%"),
-    fontWeight: "600",
-    textAlign:  "right",
-  },
-});
