@@ -4,6 +4,7 @@ export default {
     slug: "relative-calculator",
     experiments: {
       baseUrl: "/relative-calculator/"
-    }
+    },
+    scheme: "relative"
   }
 };
